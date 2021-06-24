@@ -1,7 +1,5 @@
 # Import Flask modules
-from flask import Flask, redirect, url_for
-from flask.helpers import url_for
-from flask.templating import render_template
+from flask import Flask, redirect, url_for, render_template
 
 # Create an object named app
 
@@ -39,15 +37,13 @@ def hello():
 
 @app.route('/admin')
 def admin():
-    return redirect(url_for('hello'))
-
-
-
+    return redirect(url_for('error'))
 
 # Create a function named greet which return formatted inline html string
 # and assign to the dynamic route of (‘/<name>’)
 
-#@app.route("/<name>")
+
+# @app.route("/<name>")
 # def greet(name):
 #     greet_format=f"""
 # <!DOCTYPE html>
@@ -57,24 +53,26 @@ def admin():
 # </head>
 # <body>
 #     <h1>Hello, { name }!</h1>
-#     <h1>Welcome to my Greeting Page</h1>
+#     <h2>Welcome to my Greeting Page</h2>
 # </body>
 # </html>
 #     """
 #     return greet_format
 
 
-
 # Create a function named greet_admin which redirect the request to the hgreet path with param of ‘Master Admin!!!!’
 # and assign to the route of (‘/greet_admin’)
-
 @app.route('/greet_admin')
 def greet_admin():
-    return redirect(url_for(('greet'), name='Master Admin!!!'))
+    return redirect(url_for(('greet'),name='master admin'))
 
 
 # Rewrite a function named greet which which uses template file named `greet.html` under `templates` folder
 # and assign to the dynamic route of (‘/<name>‘)
+
+@app.route('/<name>')
+def greet(name):
+    return render_template('greet.html', name=name)
 
 
 
@@ -83,10 +81,22 @@ def greet_admin():
 # Create a function named list10 which creates a list counting from 1 to 10 within `list10.html`
 # and assign to the route of (‘/list10’)
 
+@app.route('/list10')
+def list10():
+    return render_template('list10.html')
 
 
-# Create a function named evens which show the even numbers from 1 to 10 within `evens.html`
+
+# Create a function named evens which shows the even numbers from 1 to 10 within `evens.html`
 # and assign to the route of (‘/evens’)
+
+@app.route('/evens')
+def evens():
+    return render_template('evens.html')
+
+
+
+
 # Add a statement to run the Flask application which can be reached from any host on port 80.
 # Write a template html file named `greet.html` which takes `name` as parameter under `templates` folder
 # Write a template html file named `list10.html` which shows a list counting from 1 to 10 under `templates` folder
@@ -96,4 +106,4 @@ def greet_admin():
 
 if __name__=="__main__":
     #app.run(debug=True)
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0',port=80)
