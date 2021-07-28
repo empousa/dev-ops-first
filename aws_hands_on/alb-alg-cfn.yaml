@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This template will create Application load balancer with asg and lt.
+
+Parameters:
+  PolatVPC:
+   Description: Select the vpc for your application from the list..
+   Type: AWS::EC2::VPC::Id
+  PolatSubnets:
+    Description: Please select at least two of the subnet from list
+    Type: List<AWS::EC2::Subnet::Id>
+
+  
+Resources:
+  PolatSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enables ssh and http ports # Required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0 
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref PolatVPC
+
+  PolatAlbTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 25
+      HealthCheckTimeoutSeconds: 4
+      HealthyThresholdCount: 3
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref PolatVPC
+
+  PolatLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      SecurityGroups:
+        - !GetAtt PolatSecGroup.GroupId        
+      Subnets: !Ref PolatSubnets
+      Type: application
+
+  PolatALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions: # Required
+        - Type: forward
+          TargetGroupArn: !Ref PolatAlbTargetGroup
+      LoadBalancerArn: !Ref PolatLoadBalancer # Required
+      Port: 80
+      Protocol: HTTP
+
